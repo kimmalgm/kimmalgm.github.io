@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="kimmalgm about">
+  <title>kimmalgm — About</title>
+  <link rel="stylesheet" href="style.css">
+
+  
+
+<style>
+  .about-page {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .about-page .about-sheet {
+    position: fixed !important;
+    top: 52px !important;
+    left: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: calc(100dvh - 52px) !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    text-align: left !important;
+    align-items: stretch !important;
+  }
+
+  .about-page .about-statement,
+  .about-page .about-cv {
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 18px 32px 28px !important;
+    text-align: left !important;
+    display: block !important;
+    align-content: start !important;
+  }
+
+  .about-page .about-cv {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .about-page .about-statement {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border-left: 1px solid #d2ccc1 !important;
+    scrollbar-width: auto;
+    scrollbar-color: #c8c8c8 #f6f6f6;
+  }
+
+  .about-page .about-cv::-webkit-scrollbar,
+  .about-page .about-statement::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  .about-page .about-cv::-webkit-scrollbar-track,
+  .about-page .about-statement::-webkit-scrollbar-track {
+    background: #f6f6f6;
+  }
+
+  .about-page .about-cv::-webkit-scrollbar-thumb,
+  .about-page .about-statement::-webkit-scrollbar-thumb {
+    background: #d8d8d8;
+    border: 3px solid #f6f6f6;
+    border-radius: 0;
+  }
+
+  .about-page .about-text-block {
+    width: 100% !important;
+    margin: 0 0 18px !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    text-align: left !important;
+  }
+
+  .about-page .about-loading,
+  .about-page .about-error {
+    position: absolute;
+    top: 28px;
+    left: 32px;
+    z-index: 10;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  @media (max-width: 760px) {
+    .about-page {
+      height: auto;
+      overflow: auto;
+    }
+
+    .about-page .about-sheet {
+      position: relative !important;
+      top: 48px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    .about-page .about-statement,
+    .about-page .about-cv {
+      height: auto !important;
+      padding: 24px 20px !important;
+      overflow: visible !important;
+    }
+
+    .about-page .about-cv {
+      order: 1 !important;
+    }
+
+    .about-page .about-statement {
+      order: 2 !important;
+      border-left: 0 !important;
+      border-top: 1px solid #d2ccc1 !important;
+    }
+  }
+
+  .about-page .about-cv,
+  .about-page .about-statement {
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    align-content: flex-start !important;
+  }
+
+  .about-page .about-cv > *,
+  .about-page .about-statement > * {
+    margin-top: 0 !important;
+  }
+
+</style>
+
+</head>
+
+<body class="about-page">
+<header class="site-header">
+  <a class="logo" href="index.html">kimmalgm</a>
+  <button class="menu-button" type="button" aria-label="메뉴 열기">MENU</button>
+
+  <nav class="site-nav" aria-label="주요 메뉴">
+    <a href="work.html">WORK</a>
+    <a href="about.html" class="active">ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+  </nav>
+</header>
+
+<main class="about-sheet" id="aboutContent">
+  <section class="about-statement" id="aboutStatement" aria-label="작업세계 설명"></section>
+  <section class="about-cv" id="aboutCv" aria-label="CV"></section>
+  <p class="about-loading" id="aboutStatus">내용을 불러오는 중입니다.</p>
+</main>
+
+<script>
+  const ABOUT_SHEET_ID = "1TyayenO7aLh7xeTtBQhseix-O2NzXSF8CGVO8CzvYzk";
+  const ABOUT_SHEET_GID = "0";
+
+  const aboutStatement = document.getElementById("aboutStatement");
+  const aboutCv = document.getElementById("aboutCv");
+  const aboutStatus = document.getElementById("aboutStatus");
+
+  function cellValue(cell) {
+    if (!cell) return "";
+    return cell.v ?? cell.f ?? "";
+  }
+
+  function renderText(container, values) {
+    container.innerHTML = "";
+
+    values.forEach((value) => {
+      const text = String(value || "").trim();
+      if (!text) return;
+
+      const block = document.createElement("div");
+      block.className = "about-text-block";
+
+      const lines = text.split(/<br\s*\/?>(?:\s*)|\r?\n/gi);
+      lines.forEach((line, i) => {
+        if (i > 0) block.appendChild(document.createElement("br"));
+
+        const parts = line.split(/(\*\*.*?\*\*)/g);
+        parts.forEach((part) => {
+          if (!part) return;
+
+          if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+            const strong = document.createElement("strong");
+            strong.textContent = part.slice(2, -2);
+            block.appendChild(strong);
+          } else {
+            block.appendChild(document.createTextNode(part));
+          }
+        });
+      });
+
+      container.appendChild(block);
+    });
+  }
+
+  function showAboutError(error) {
+    aboutStatus.className = "about-error";
+    aboutStatus.textContent = "어바웃 내용을 불러오지 못했습니다. 시트 공유 설정을 확인해주세요.";
+    console.error(error);
+  }
+
+  window.aboutSheetCallback = function(sheetData) {
+    try {
+      const rows = sheetData?.table?.rows || [];
+
+
+      const cvValues = [];
+      const statementValues = [];
+
+      rows.forEach((row, rowIndex) => {
+        const cells = row.c || [];
+        const cv = cellValue(cells[0]);
+        const statement = cellValue(cells[1]);
+
+        const cvText = String(cv || "").trim();
+        const statementText = String(statement || "").trim();
+
+
+        if (rowIndex === 0 &&
+            cvText.toLowerCase() === "a" &&
+            statementText.toLowerCase() === "b") {
+          return;
+        }
+
+
+        if (statementText.toLowerCase() === "example") {
+          if (cvText) cvValues.push(cv);
+          return;
+        }
+
+        if (cvText) cvValues.push(cv);
+        if (statementText) statementValues.push(statement);
+      });
+
+      if (!cvValues.length && !statementValues.length) {
+        throw new Error("표시할 ABOUT 내용이 없습니다.");
+      }
+
+      renderText(aboutStatement, statementValues);
+      renderText(aboutCv, cvValues);
+
+
+      aboutCv.scrollTop = 0;
+      aboutStatement.scrollTop = 0;
+
+      requestAnimationFrame(() => {
+        aboutCv.scrollTop = 0;
+        aboutStatement.scrollTop = 0;
+        window.scrollTo(0, 0);
+      });
+
+      aboutStatus.remove();
+    } catch (error) {
+      showAboutError(error);
+    }
+  };
+
+  window.addEventListener("pageshow", () => {
+    aboutCv.scrollTop = 0;
+    aboutStatement.scrollTop = 0;
+    window.scrollTo(0, 0);
+  });
+
+  const sheetScript = document.createElement("script");
+  sheetScript.src =
+    `https://docs.google.com/spreadsheets/d/${ABOUT_SHEET_ID}/gviz/tq` +
+    `?gid=${ABOUT_SHEET_GID}` +
+    `&headers=0` +
+    `&tqx=out:json;responseHandler:aboutSheetCallback`;
+  sheetScript.onerror = () => showAboutError(new Error("구글시트를 불러오지 못했습니다."));
+  document.body.appendChild(sheetScript);
+</script>
+
+<script>
+(() => {
+  const button = document.querySelector('.menu-button');
+  const nav = document.querySelector('.site-nav');
+  if (!button || !nav || button.dataset.boundMenu === '1') return;
+  button.dataset.boundMenu = '1';
+  button.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    document.body.classList.toggle('menu-open', open);
+    button.textContent = open ? 'CLOSE' : 'MENU';
+    button.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    document.body.classList.remove('menu-open');
+  }));
+})();
+</script>
+</body>
+</html>

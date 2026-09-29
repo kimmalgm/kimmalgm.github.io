@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="김맑음 연락처">
+  <title>kimmalgm — Contact</title>
+  <link rel="stylesheet" href="style.css">
+
+<style>
+  .contact-page { height: 100dvh; overflow: hidden; }
+  .contact-page .contact-sheet {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: auto;
+    scrollbar-color: #c8c8c8 #f6f6f6;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+  .contact-page .contact-sheet p {
+    text-align: left !important;
+  }
+  .contact-page .contact-sheet a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .contact-page .contact-sheet::-webkit-scrollbar { width: 16px; }
+  .contact-page .contact-sheet::-webkit-scrollbar-track { background: #f6f6f6; }
+  .contact-page .contact-sheet::-webkit-scrollbar-thumb {
+    background: #d8d8d8; border: 3px solid #f6f6f6; border-radius: 0;
+  }
+</style>
+</head>
+
+<body class="contact-page">
+<header class="site-header">
+  <a class="logo" href="index.html">kimmalgm</a>
+  <button class="menu-button" type="button" aria-label="메뉴 열기">MENU</button>
+
+  <nav class="site-nav" aria-label="주요 메뉴">
+    <a href="work.html">WORK</a>
+    <a href="about.html">ABOUT</a>
+    <a href="contact.html" class="active">CONTACT</a>
+  </nav>
+</header>
+
+<main class="contact-sheet" id="contactContent">
+  <p class="contact-loading" id="contactStatus">내용을 불러오는 중입니다.</p>
+</main>
+
+<script>
+  const CONTACT_SHEET_ID = "189xmMutwV1V5nWaiSjj4SnxSdJSWDIyPShL2wKGnbGM";
+  const CONTACT_SHEET_GID = "0";
+
+  const contactContent = document.getElementById("contactContent");
+  const contactStatus = document.getElementById("contactStatus");
+
+  function cellValue(cell) {
+    if (!cell) return "";
+    return cell.v ?? cell.f ?? "";
+  }
+
+  function showContactError(error) {
+    contactStatus.className = "contact-error";
+    contactStatus.textContent =
+      "컨택 내용을 불러오지 못했습니다. 구글시트 공유 설정을 확인해주세요.";
+    console.error(error);
+  }
+
+  window.contactSheetCallback = function(sheetData) {
+    try {
+      const rows = sheetData?.table?.rows || [];
+
+      const contacts = rows.map((row) => {
+        const cells = row.c || [];
+        return {
+          platform: String(cellValue(cells[0]) || "").trim(),
+          id: String(cellValue(cells[1]) || "").trim(),
+          url: String(cellValue(cells[2]) || "").trim()
+        };
+      }).filter((item) => item.platform || item.id || item.url);
+
+      if (!contacts.length) throw new Error("CONTACT 시트에 표시할 내용이 없습니다.");
+      contactContent.innerHTML = "";
+
+      contacts.forEach(({ platform, id, url }) => {
+        const paragraph = document.createElement("p");
+        if (platform) {
+          paragraph.appendChild(document.createTextNode(platform));
+          if (id) paragraph.appendChild(document.createTextNode(" "));
+        }
+
+        if (id) {
+          const link = document.createElement("a");
+          const type = platform.toLowerCase();
+          let href = url;
+
+          if (type.includes("email")) {
+            const email = (url || id).replace(/^mailto:/i, "");
+            href = `mailto:${email}`;
+          } else if (!href && type.includes("insta")) {
+            href = `https://www.instagram.com/${id.replace(/^@/, "")}/`;
+          } else if (!href && type.includes("youtube")) {
+            href = `https://www.youtube.com/${id.startsWith("@") ? id : "@" + id}`;
+          }
+
+          link.textContent = id;
+          if (href) {
+            link.href = href;
+            if (!href.toLowerCase().startsWith("mailto:")) {
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+            }
+            paragraph.appendChild(link);
+          } else {
+            paragraph.appendChild(document.createTextNode(id));
+          }
+        }
+        contactContent.appendChild(paragraph);
+      });
+    } catch (error) {
+      showContactError(error);
+    }
+  };
+
+  const script = document.createElement("script");
+  script.src =
+    `https://docs.google.com/spreadsheets/d/${CONTACT_SHEET_ID}/gviz/tq` +
+    `?gid=${CONTACT_SHEET_GID}` +
+    `&headers=0` +
+    `&tqx=out:json;responseHandler:contactSheetCallback`;
+
+  script.onerror = () => {
+    showContactError(new Error("구글시트를 불러오지 못했습니다."));
+  };
+
+  document.body.appendChild(script);
+</script>
+
+
+<script>
+(() => {
+  const button = document.querySelector('.menu-button');
+  const nav = document.querySelector('.site-nav');
+  if (!button || !nav || button.dataset.boundMenu === '1') return;
+  button.dataset.boundMenu = '1';
+  button.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    document.body.classList.toggle('menu-open', open);
+    button.textContent = open ? 'CLOSE' : 'MENU';
+    button.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    document.body.classList.remove('menu-open');
+  }));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="kimmalgm work">
+  <title>kimmalgm — Work</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .work-image-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #171717;
+      font-size: 13px;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .work-image-loading.is-visible {
+      opacity: 1;
+    }
+
+    .work-index {
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      scrollbar-width: auto;
+      scrollbar-color: #c8c8c8 #f6f6f6;
+    }
+    .work-index::-webkit-scrollbar { width: 16px; }
+    .work-index::-webkit-scrollbar-track { background: #f6f6f6; }
+    .work-index::-webkit-scrollbar-thumb {
+      background: #d8d8d8; border: 3px solid #f6f6f6; border-radius: 0;
+    }
+
+  </style>
+
+</head>
+
+<body class="work-page">
+<header class="site-header">
+  <a class="logo" href="index.html">kimmalgm</a>
+
+  <button class="menu-button" type="button" aria-label="메뉴 열기">
+    MENU
+  </button>
+
+  <nav class="site-nav" aria-label="주요 메뉴">
+    <a href="work.html" class="active">WORK</a>
+    <a href="about.html">ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+  </nav>
+</header>
+
+<main class="work-layout">
+  <section class="work-scroll" id="workScroll">
+    <p class="work-loading" id="workStatus">작품을 불러오는 중입니다.</p>
+  </section>
+
+  <aside class="work-index" aria-label="작품 목록">
+    <p class="work-index-title">WORK</p>
+    <nav id="workIndex"></nav>
+  </aside>
+</main>
+
+<script>
+  const SHEET_ID = "1MGg_q7liZOeQ3Q-H-zWA4WMk__OD5KcOLcZCuUtXDxM";
+  const SHEET_GID = "0";
+
+  const workScroll = document.getElementById("workScroll");
+  const workIndex = document.getElementById("workIndex");
+  const workStatus = document.getElementById("workStatus");
+
+  function cellValue(cell) {
+    if (!cell) return "";
+    return cell.v ?? "";
+  }
+
+  function slugify(value, index) {
+    const slug = String(value)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9가-힣]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    return slug || `project-${index + 1}`;
+  }
+
+  function normalizeImageUrl(url) {
+    if (!url) return "";
+
+    const value = String(url).trim();
+
+    const driveFileMatch = value.match(
+      /drive\.google\.com\/file\/d\/([^/]+)/
+    );
+
+    if (driveFileMatch) {
+      return `https://drive.google.com/thumbnail?id=${driveFileMatch[1]}&sz=w2000`;
+    }
+
+    const driveOpenMatch = value.match(/[?&]id=([^&]+)/);
+
+    if (value.includes("drive.google.com") && driveOpenMatch) {
+      return `https://drive.google.com/thumbnail?id=${driveOpenMatch[1]}&sz=w2000`;
+    }
+
+    return value;
+  }
+
+  function getProjectImages(project) {
+    const images = [];
+
+    for (let index = 1; index <= 10; index += 1) {
+      const image = normalizeImageUrl(project[`pic${index}`]);
+
+      if (image) {
+        images.push(image);
+      }
+    }
+
+    return images;
+  }
+
+  function createSlider(images, title) {
+    const slider = document.createElement("div");
+    slider.className = "work-slider";
+    slider.tabIndex = 0;
+
+    const image = document.createElement("img");
+    image.className = "work-slide-image";
+    image.src = images[0];
+    image.alt = `${title} 작업 이미지 1`;
+    image.loading = "lazy";
+
+    const loadingMessage = document.createElement("div");
+    loadingMessage.className = "work-image-loading";
+    loadingMessage.textContent = "다음 사진을 위해 기다려주세요";
+
+    slider.append(image, loadingMessage);
+
+    let currentIndex = 0;
+
+    function showImage(nextIndex) {
+      const newIndex = (nextIndex + images.length) % images.length;
+
+      image.classList.add("is-changing");
+      loadingMessage.classList.add("is-visible");
+
+      window.setTimeout(() => {
+        currentIndex = newIndex;
+        image.src = images[currentIndex];
+        image.alt = `${title} 작업 이미지 ${currentIndex + 1}`;
+
+        if (image.complete) {
+          image.classList.remove("is-changing");
+          loadingMessage.classList.remove("is-visible");
+        } else {
+          image.onload = () => {
+            image.classList.remove("is-changing");
+            loadingMessage.classList.remove("is-visible");
+          };
+
+          image.onerror = () => {
+            image.classList.remove("is-changing");
+            loadingMessage.classList.remove("is-visible");
+          };
+        }
+      }, 180);
+    }
+
+    slider.showPrevious = () => showImage(currentIndex - 1);
+    slider.showNext = () => showImage(currentIndex + 1);
+
+    if (images.length === 1) {
+      return slider;
+    }
+
+    const previousButton = document.createElement("button");
+    previousButton.className = "work-arrow prev";
+    previousButton.type = "button";
+    previousButton.setAttribute("aria-label", "이전 이미지");
+    previousButton.textContent = "‹";
+
+    const nextButton = document.createElement("button");
+    nextButton.className = "work-arrow next";
+    nextButton.type = "button";
+    nextButton.setAttribute("aria-label", "다음 이미지");
+    nextButton.textContent = "›";
+
+    previousButton.addEventListener("click", slider.showPrevious);
+    nextButton.addEventListener("click", slider.showNext);
+
+    slider.append(previousButton, nextButton);
+    return slider;
+  }
+
+  function createProject(project, index) {
+    const titleKo = String(project.title_ko || "");
+    const titleEn = String(project.title_en || "");
+    const titleFr = String(project.title_fr || "");
+    const titleForAlt = [titleKo, titleEn, titleFr].filter(Boolean).join(" / ");
+    const projectId = slugify(project.id || titleEn || titleKo, index);
+    const images = getProjectImages(project);
+
+    const article = document.createElement("article");
+    article.className = "work-project";
+    article.id = projectId;
+
+    const content = document.createElement("div");
+    content.className = "work-content";
+
+    const visual = document.createElement("div");
+    visual.className = "work-visual";
+
+    if (images.length > 0) {
+      visual.appendChild(createSlider(images, titleForAlt));
+    }
+
+    const info = document.createElement("div");
+    info.className = "work-project-info";
+
+    const meta = document.createElement("div");
+    meta.className = "work-meta";
+
+    const titleElement = document.createElement("h1");
+
+    const titleKoElement = document.createElement("div");
+    titleKoElement.textContent = titleKo;
+
+    const titleEnElement = document.createElement("div");
+    titleEnElement.textContent = titleEn;
+
+    const titleFrElement = document.createElement("div");
+    titleFrElement.textContent = titleFr;
+
+    titleElement.append(
+      titleKoElement,
+      titleEnElement,
+      titleFrElement
+    );
+
+    const year = document.createElement("p");
+    year.textContent = project.year || "";
+
+    const material = document.createElement("p");
+    material.textContent = project.material || "";
+
+    meta.append(titleElement, year, material);
+
+    const description = document.createElement("div");
+    description.className = "work-description";
+
+    const descriptionText = document.createElement("p");
+    descriptionText.textContent = project.description || "";
+
+    description.appendChild(descriptionText);
+    info.append(meta, description);
+    content.append(visual, info);
+    article.append(content);
+
+    const indexLink = document.createElement("a");
+    indexLink.href = `#${projectId}`;
+
+    const indexTitle = document.createElement("span");
+    const indexParts = [titleKo, titleEn]
+      .map((title) => String(title || "").trim())
+      .filter(Boolean);
+
+    indexTitle.textContent = indexParts.join(" · ");
+    indexLink.appendChild(indexTitle);
+
+    indexLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      history.replaceState(null, "", `#${projectId}`);
+      article.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+
+    workIndex.appendChild(indexLink);
+    return article;
+  }
+
+  function getActiveProjectIndex() {
+    const projects = [...document.querySelectorAll(".work-project")];
+
+    if (!projects.length) return -1;
+
+    const containerTop = workScroll.getBoundingClientRect().top;
+    let activeIndex = 0;
+    let smallestDistance = Infinity;
+
+    projects.forEach((project, index) => {
+      const distance = Math.abs(
+        project.getBoundingClientRect().top - containerTop
+      );
+
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        activeIndex = index;
+      }
+    });
+
+    return activeIndex;
+  }
+
+  function setActiveProject() {
+    const links = [...workIndex.querySelectorAll("a")];
+    const activeIndex = getActiveProjectIndex();
+
+    if (activeIndex < 0) return;
+
+    links.forEach((link, index) => {
+      link.classList.toggle("is-active", index === activeIndex);
+    });
+  }
+
+  function isTypingTarget(target) {
+    return (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement ||
+      target.isContentEditable
+    );
+  }
+
+  function scrollToHashTarget(behavior = "auto") {
+    const rawHash = window.location.hash.replace(/^#/, "");
+    if (!rawHash) return;
+
+    let decodedHash = rawHash;
+    try {
+      decodedHash = decodeURIComponent(rawHash);
+    } catch (error) {
+      decodedHash = rawHash;
+    }
+
+    const targetId = decodedHash;
+    const slugId = slugify(decodedHash, 0);
+    const target =
+      document.getElementById(targetId) ||
+      document.getElementById(slugId);
+
+    if (!target) return;
+
+    target.scrollIntoView({
+      behavior,
+      block: "start"
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (isTypingTarget(event.target)) return;
+
+    const projects = [...document.querySelectorAll(".work-project")];
+    const activeIndex = getActiveProjectIndex();
+
+    if (!projects.length || activeIndex < 0) return;
+
+    const activeProject = projects[activeIndex];
+    const activeSlider = activeProject.querySelector(".work-slider");
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      activeSlider?.showPrevious?.();
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      activeSlider?.showNext?.();
+    }
+
+    if (event.code === "Space") {
+      event.preventDefault();
+
+      const nextIndex = (activeIndex + 1) % projects.length;
+
+      projects[nextIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  });
+
+  function renderSheetData(sheetData) {
+    try {
+      const table = sheetData.table;
+
+      const headers = table.cols.map((column, index) => {
+        const label = column.label || column.id || `column${index}`;
+        return String(label).trim().toLowerCase();
+      });
+
+      let projects = table.rows.map((row) => {
+        const project = {};
+
+        headers.forEach((header, index) => {
+          project[header] = cellValue(row.c[index]);
+        });
+
+        return project;
+      });
+
+      projects = projects
+        .filter((project) =>
+          project.title_ko ||
+          project.title_en ||
+          project.title_fr ||
+          project.title
+        )
+        .sort((a, b) => {
+          const orderA = Number(a.order) || 9999;
+          const orderB = Number(b.order) || 9999;
+          return orderA - orderB;
+        });
+
+      if (!projects.length) {
+        throw new Error("시트에 표시할 작품이 없습니다.");
+      }
+
+      workStatus.remove();
+
+      projects.forEach((project, index) => {
+        workScroll.appendChild(createProject(project, index));
+      });
+
+      setActiveProject();
+      workScroll.addEventListener("scroll", setActiveProject, {
+        passive: true
+      });
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToHashTarget("auto");
+          setActiveProject();
+        });
+      });
+    } catch (error) {
+      showSheetError(error);
+    }
+  }
+
+  function showSheetError(error) {
+    workStatus.className = "work-error";
+    workStatus.textContent =
+      "작품을 불러오지 못했습니다. 시트의 첫 행과 공유 설정을 확인해주세요.";
+    console.error(error);
+  }
+
+  window.googleSheetCallback = function(sheetData) {
+    renderSheetData(sheetData);
+  };
+
+  function loadGoogleSheet() {
+    const script = document.createElement("script");
+
+    script.src =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
+      `?gid=${SHEET_GID}` +
+      `&headers=1` +
+      `&tqx=out:json;responseHandler:googleSheetCallback`;
+
+    script.onerror = () => {
+      showSheetError(new Error("구글시트 스크립트를 불러오지 못했습니다."));
+    };
+
+    document.body.appendChild(script);
+  }
+
+  window.addEventListener("hashchange", () => {
+    scrollToHashTarget("smooth");
+    setActiveProject();
+  });
+
+  loadGoogleSheet();
+</script>
+
+<script>
+(() => {
+  const button = document.querySelector('.menu-button');
+  const nav = document.querySelector('.site-nav');
+  if (!button || !nav || button.dataset.boundMenu === '1') return;
+  button.dataset.boundMenu = '1';
+  button.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    document.body.classList.toggle('menu-open', open);
+    button.textContent = open ? 'CLOSE' : 'MENU';
+    button.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    document.body.classList.remove('menu-open');
+  }));
+})();
+</script>
+</body>
+</html>

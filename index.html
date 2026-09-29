@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kim Malgum">
+  <title>kimmalgm — Home</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .rain-fill     { z-index: 1 !important; }
+    .home-projects { z-index: 2 !important; }
+    .rain-layer    { z-index: 3 !important; pointer-events: none; }
+
+    .rain-fill {
+      overflow: visible !important;
+      transition: height .72s cubic-bezier(.22,.72,.22,1) !important;
+      will-change: height;
+    }
+
+    .rain-fill::before,
+    .rain-fill::after {
+      content: "";
+      position: absolute;
+      left: -8%;
+      width: 116%;
+      background: inherit;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .rain-fill::before {
+      top: -10px;
+      height: 14px;
+      clip-path: polygon(
+        0 62%, 4% 28%, 8% 62%, 12% 28%, 16% 62%, 20% 28%,
+        24% 62%, 28% 28%, 32% 62%, 36% 28%, 40% 62%, 44% 28%,
+        48% 62%, 52% 28%, 56% 62%, 60% 28%, 64% 62%, 68% 28%,
+        72% 62%, 76% 28%, 80% 62%, 84% 28%, 88% 62%, 92% 28%,
+        96% 62%, 100% 28%, 100% 100%, 0 100%
+      );
+      animation: fineWave 2.2s ease-in-out infinite alternate;
+    }
+
+    .rain-fill::after {
+      top: -7px;
+      height: 10px;
+      opacity: .92;
+      clip-path: polygon(
+        0 35%, 4% 68%, 8% 35%, 12% 68%, 16% 35%, 20% 68%,
+        24% 35%, 28% 68%, 32% 35%, 36% 68%, 40% 35%, 44% 68%,
+        48% 35%, 52% 68%, 56% 35%, 60% 68%, 64% 35%, 68% 68%,
+        72% 35%, 76% 68%, 80% 35%, 84% 68%, 88% 35%, 92% 68%,
+        96% 35%, 100% 68%, 100% 100%, 0 100%
+      );
+      animation: fineWaveBack 2.8s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes fineWave {
+      0%   { transform: translate3d(-1.2%, 1px, 0); }
+      50%  { transform: translate3d(.8%, -1px, 0); }
+      100% { transform: translate3d(1.4%, 1px, 0); }
+    }
+
+    @keyframes fineWaveBack {
+      0%   { transform: translate3d(1%, 0, 0); }
+      50%  { transform: translate3d(-.7%, 1px, 0); }
+      100% { transform: translate3d(-1.3%, -1px, 0); }
+    }
+
+    .rain-fill.is-rising::before { animation-duration: 1.7s; }
+    .rain-fill.is-rising::after  { animation-duration: 2.1s; }
+
+    .home-project-link {
+      transition:
+        left .68s cubic-bezier(.25,.7,.35,1),
+        top .68s cubic-bezier(.25,.7,.35,1),
+        width .62s cubic-bezier(.25,.7,.35,1),
+        transform .65s cubic-bezier(.25,.7,.35,1) !important;
+      will-change: left, top, width, transform;
+    }
+
+    @media (max-width: 760px) {
+      html, body.home-page {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+      }
+
+      .home-page .home-stage {
+        position: relative !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: calc(100dvh - 48px) !important;
+        margin-top: 48px !important;
+        overflow: visible !important;
+      }
+
+      .home-page .home-projects {
+        position: relative !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      .home-page .home-project-link {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: calc(100% - 160px) !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 80px !important;
+        padding: 0 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+
+      .home-page .home-project-link:first-child {
+        margin-top: 40px !important;
+      }
+
+      .home-page .home-project-link img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        object-fit: contain !important;
+      }
+
+      .home-page .home-project-title,
+      .home-page .rain-layer,
+      .home-page .rain-fill {
+        display: none !important;
+      }
+    }
+
+    .home-project-title {
+      color: #FFE600 !important;    
+      text-shadow: none !important;
+      -webkit-text-stroke: 0;
+      paint-order: normal;
+    }
+      @media (max-width: 760px) {
+      .rain-layer, .rain-fill { display: none !important; }
+      .home-project-title { display: none !important; }
+      .home-project-link { transition: none !important; filter: none !important; }
+      .home-project-link img { width: 100% !important; height: auto !important; }
+    }
+  </style>
+</head>
+<body class="home-page">
+<header class="site-header">
+  <a class="logo" href="index.html">kimmalgm</a>
+  <button class="menu-button" type="button" aria-label="메뉴 열기">MENU</button>
+  <nav class="site-nav" aria-label="주요 메뉴">
+    <a href="work.html">WORK</a>
+    <a href="about.html">ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+  </nav>
+</header>
+
+<main class="home-stage" aria-label="홈 작업 바로가기">
+  <div class="home-projects" id="homeProjects" aria-label="작업 목록"></div>
+  <div class="rain-layer" id="rainLayer" aria-hidden="true"></div>
+  <div class="rain-fill" id="rainFill" aria-hidden="true"></div>
+</main>
+
+<script>
+  const HOME_SHEET_ID = "1ECXVTJkrLoLWv7tp7CKUpG6BtL-1FB3WYe47g9M0Udc";
+  const HOME_SHEET_GID = "0";
+  const WORK_SHEET_ID = "1MGg_q7liZOeQ3Q-H-zWA4WMk__OD5KcOLcZCuUtXDxM";
+  const WORK_SHEET_GID = "0";
+
+  const projectsRoot = document.getElementById("homeProjects");
+  const rainLayer = document.getElementById("rainLayer");
+  const rainFill = document.getElementById("rainFill");
+  const menuButton = document.querySelector(".menu-button");
+  const siteNav = document.querySelector(".site-nav");
+
+  let isRaining = false;
+  let rainInterval = null;
+  let rainStopTimer = null;
+  let fillLevel = 0;
+  let fillTarget = 0;
+  let selectedLink = null;
+  let isCommitting = false;
+  let homeItems = [];
+  let workTitleMap = new Map();
+  const filledInstances = new Set();
+
+  function cellValue(cell) {
+    if (!cell) return "";
+    return cell.v ?? cell.f ?? "";
+  }
+
+  function normalizeImageUrl(url) {
+    if (!url) return "";
+
+    const value = String(url).trim();
+    const driveFileMatch = value.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+
+    if (driveFileMatch) {
+      return `https://drive.google.com/thumbnail?id=${driveFileMatch[1]}&sz=w2000`;
+    }
+
+    const driveOpenMatch = value.match(/[?&]id=([^&]+)/);
+
+    if (value.includes("drive.google.com") && driveOpenMatch) {
+      return `https://drive.google.com/thumbnail?id=${driveOpenMatch[1]}&sz=w2000`;
+    }
+
+    return value;
+  }
+
+  function randomBetween(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function slugify(value, index) {
+    const slug = String(value)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9가-힣]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    return slug || `project-${index + 1}`;
+  }
+
+  function parseSheetRows(sheetData) {
+    const table = sheetData?.table;
+    if (!table) return [];
+
+    const headers = table.cols.map((column, index) => {
+      const label = column.label || column.id || `column${index}`;
+      return String(label).trim().toLowerCase();
+    });
+
+    return table.rows.map((row) => {
+      const item = {};
+      headers.forEach((header, index) => {
+        item[header] = cellValue((row.c || [])[index]);
+      });
+      return item;
+    });
+  }
+
+  function buildCard(item, index) {
+    const imageUrl = normalizeImageUrl(item.image);
+    const projectId = String(item.project_id || "").trim();
+    const label = workTitleMap.get(projectId) || String(item.title || projectId || `작업 ${index + 1}`);
+
+    const link = document.createElement("a");
+    link.className = "home-project-link";
+    link.href = `work.html#${encodeURIComponent(projectId)}`;
+    link.setAttribute("aria-label", label);
+    link.dataset.projectId = projectId;
+    link.dataset.instanceId = `original-${index}-${projectId}`;
+
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = label;
+    img.loading = "eager";
+    img.decoding = "async";
+    img.draggable = false;
+
+    const caption = document.createElement("span");
+    caption.className = "home-project-title";
+    caption.textContent = label;
+
+    link.append(img, caption);
+    return link;
+  }
+
+  function buildDuplicateCard(item, index) {
+    const imageUrl = normalizeImageUrl(item.image);
+    const projectId = String(item.project_id || "").trim();
+    const label = workTitleMap.get(projectId) || String(item.title || projectId || `작업 ${index + 1}`);
+
+    const link = document.createElement("a");
+    link.className = "home-project-link home-project-duplicate";
+    link.href = `work.html#${encodeURIComponent(projectId)}`;
+    link.setAttribute("aria-label", label);
+    link.dataset.projectId = projectId;
+    link.dataset.instanceId = `duplicate-${index}-${projectId}`;
+
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = label;
+    img.loading = "eager";
+    img.decoding = "async";
+    img.draggable = false;
+
+    const caption = document.createElement("span");
+    caption.className = "home-project-title";
+    caption.textContent = label;
+
+    link.append(img, caption);
+    return link;
+  }
+
+  function addDuplicateCopies() {
+    projectsRoot.querySelectorAll(".home-project-duplicate").forEach((node) => node.remove());
+
+    const originalCount = homeItems.length;
+    if (!originalCount) return;
+
+    const isMobile = window.innerWidth <= 760;
+    // 모바일은 원본 1개만 보여주므로 중복 생성 안 함
+    if (isMobile) return;
+    const targetTotal = Math.max(originalCount * 2, 14);
+
+    const duplicateCount = Math.max(0, Math.round(targetTotal) - originalCount);
+
+    for (let i = 0; i < duplicateCount; i += 1) {
+      const item = homeItems[i % originalCount];
+      projectsRoot.appendChild(buildDuplicateCard(item, i));
+    }
+  }
+
+  function placeCards() {
+    const cards = [...projectsRoot.querySelectorAll(".home-project-link")];
+    if (!cards.length) return;
+
+    const stageRect = projectsRoot.getBoundingClientRect();
+    const stageWidth = stageRect.width;
+    const stageHeight = stageRect.height;
+    const isMobile = window.innerWidth <= 760;
+    const count = cards.length;
+
+    if (isMobile) {
+      cards.forEach((card) => {
+        card.style.display = "flex";
+        card.style.left = "";
+        card.style.top = "";
+        card.style.width = "100%";
+        card.style.transform = "none";
+        card.style.setProperty("--object-rotation", "0deg");
+      });
+      return;
+    }
+
+    cards.forEach((card) => { card.style.display = "block"; });
+
+    const ratio = stageWidth / Math.max(stageHeight, 1);
+    const cols = Math.max(1, Math.ceil(Math.sqrt(count * ratio)));
+    const rows = Math.max(1, Math.ceil(count / cols));
+    const cellWidth = stageWidth / cols;
+    const cellHeight = stageHeight / rows;
+
+    const cells = [];
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        cells.push({ row, col });
+      }
+    }
+
+    for (let i = cells.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cells[i], cells[j]] = [cells[j], cells[i]];
+    }
+
+    cards.forEach((card, index) => {
+      const cell = cells[index];
+      const img = card.querySelector("img");
+      const naturalWidth = Math.max(img?.naturalWidth || 1, 1);
+      const naturalHeight = Math.max(img?.naturalHeight || 1, 1);
+      const aspect = naturalHeight / naturalWidth;
+      const duplicate = card.classList.contains("home-project-duplicate");
+
+      const pad = isMobile ? 1 : 5;
+      const maxWidthByCell = Math.max(18, cellWidth - pad * 2);
+      const maxHeightByCell = Math.max(18, cellHeight - pad * 2);
+      const maxWidthByHeight = maxHeightByCell / Math.max(aspect, 0.01);
+      const cellCap = Math.min(maxWidthByCell, maxWidthByHeight);
+
+      const scale = isMobile
+        ? (duplicate ? randomBetween(0.88, 0.98) : randomBetween(0.92, 1.0))
+        : (duplicate ? randomBetween(0.6, 1.0) : randomBetween(0.75, 1.0));
+
+      const width = isMobile
+        ? Math.max(18, cellCap * scale)
+        : Math.max(
+            duplicate ? 70 : 90,
+            Math.min(cellCap * scale, 380)
+          );
+
+      const height = width * aspect;
+      const cellLeft = cell.col * cellWidth;
+      const cellTop = cell.row * cellHeight;
+      const freeX = Math.max(0, cellWidth - width - pad * 2);
+      const freeY = Math.max(0, cellHeight - height - pad * 2);
+      const left = cellLeft + pad + randomBetween(0, freeX);
+      const top = cellTop + pad + randomBetween(0, freeY);
+
+      card.style.left = `${left}px`;
+      card.style.top = `${top}px`;
+      card.style.width = `${width}px`;
+      card.style.setProperty("--object-rotation", `${randomBetween(-7, 7).toFixed(2)}deg`);
+    });
+  }
+
+ 
+  function makeRainDrop() {
+    const drop = document.createElement("span");
+    drop.className = "rain-drop";
+    drop.textContent = "";
+    drop.style.display = "block";
+    drop.style.fontSize = "0";
+    drop.style.width = "1px";                              
+    drop.style.height = `${35 + Math.random() * 45}px`;       
+    drop.style.background = "#000000";
+    drop.style.left = `${Math.random() * 100}%`;
+    drop.style.animationDuration = `${0.85 + Math.random() * 0.75}s`;
+    drop.style.opacity = `${0.65 + Math.random() * 0.35}`;
+    rainLayer.appendChild(drop);
+
+    drop.addEventListener("animationend", () => {
+      drop.remove();
+    });
+  }
+
+  function stopRainSoon(delay = 1050) {
+    window.clearTimeout(rainStopTimer);
+    rainStopTimer = window.setTimeout(() => {
+      if (rainInterval) {
+        window.clearInterval(rainInterval);
+        rainInterval = null;
+      }
+      isRaining = false;
+      document.body.classList.remove("is-raining");
+    }, delay);
+  }
+
+  function startRainBurst(duration = 1350) {
+    if (!isRaining) {
+      isRaining = true;
+      document.body.classList.add("is-raining");
+
+      rainInterval = window.setInterval(() => {
+        for (let i = 0; i < 3; i += 1) makeRainDrop();
+      }, 150);
+    }
+
+    for (let i = 0; i < 18; i += 1) {
+      window.setTimeout(makeRainDrop, i * 45);
+    }
+
+    stopRainSoon(duration);
+  }
+
+  function addOneFillStep(link) {
+    const instanceId = link.dataset.instanceId || `${link.dataset.projectId}-${Math.random()}`;
+    filledInstances.add(instanceId);
+
+    const total = projectsRoot.querySelectorAll(".home-project-link").length;
+    fillTarget = Math.min(100, fillTarget + 100 / total);
+    fillLevel = fillTarget;
+    rainFill.style.height = `${fillTarget}%`;
+    rainFill.classList.add("is-rising");
+
+    window.setTimeout(() => {
+      rainFill.classList.remove("is-rising");
+    }, 1500);
+
+    if (fillTarget >= 80 && !isRaining) {
+      isRaining = true;
+      document.body.classList.add("is-raining");
+
+      for (let i = 0; i < 42; i += 1) {
+        window.setTimeout(makeRainDrop, i * 20);
+      }
+
+      rainInterval = window.setInterval(() => {
+        for (let i = 0; i < 5; i += 1) makeRainDrop();
+      }, 90);
+    }
+  }
+
+  function showHomeError(error) {
+    console.error(error);
+  }
+
+  function renderHomeItems(items) {
+    projectsRoot.innerHTML = "";
+
+    items.forEach((item, index) => {
+      projectsRoot.appendChild(buildCard(item, index));
+    });
+
+    addDuplicateCopies();
+
+    const images = [...projectsRoot.querySelectorAll("img")];
+
+    Promise.all(
+      images.map((image) => new Promise((resolve) => {
+        if (image.complete) {
+          resolve();
+          return;
+        }
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      }))
+    ).then(() => {
+      placeCards();
+    });
+  }
+
+  function tryRenderHome() {
+    if (!homeItems.length) return;
+    renderHomeItems(homeItems);
+  }
+
+  window.homeSheetCallback = function(sheetData) {
+    try {
+      homeItems = parseSheetRows(sheetData)
+        .filter((item) => item.image && item.project_id)
+        .sort((a, b) => {
+          const orderA = Number(a.order) || 9999;
+          const orderB = Number(b.order) || 9999;
+          return orderA - orderB;
+        });
+
+      if (!homeItems.length) {
+        throw new Error("HOME 시트에 image와 project_id가 모두 들어간 행이 없습니다.");
+      }
+
+      tryRenderHome();
+    } catch (error) {
+      showHomeError(error);
+    }
+  };
+
+  window.workTitleSheetCallback = function(sheetData) {
+    try {
+      const rows = parseSheetRows(sheetData);
+      workTitleMap = new Map();
+
+      rows.forEach((item, index) => {
+        const rawId = String(item.id || item.title_en || item.title_ko || item.title || "").trim();
+        if (!rawId) return;
+        const id = slugify(rawId, index);
+        const title = [item.title_ko, item.title_en, item.title_fr]
+          .map((value) => String(value || "").trim())
+          .filter(Boolean)
+          .join(" · ");
+
+        workTitleMap.set(id, title || rawId);
+        workTitleMap.set(rawId, title || rawId);
+      });
+
+      if (homeItems.length) tryRenderHome();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  function loadSheet(sheetId, gid, callbackName, onError) {
+    const script = document.createElement("script");
+    script.src =
+      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq` +
+      `?gid=${gid}` +
+      `&headers=1` +
+      `&tqx=out:json;responseHandler:${callbackName}`;
+    script.onerror = onError;
+    document.body.appendChild(script);
+  }
+
+  function loadHomeSheet() {
+    loadSheet(
+      HOME_SHEET_ID,
+      HOME_SHEET_GID,
+      "homeSheetCallback",
+      () => showHomeError(new Error("HOME 구글시트를 불러오지 못했습니다."))
+    );
+
+    loadSheet(
+      WORK_SHEET_ID,
+      WORK_SHEET_GID,
+      "workTitleSheetCallback",
+      () => console.error("WORK 구글시트의 작품명을 불러오지 못했습니다.")
+    );
+  }
+
+  projectsRoot.addEventListener("click", (event) => {
+    const link = event.target.closest(".home-project-link");
+
+    if (!link) {
+      selectedLink?.classList.remove("is-selected", "is-entering");
+      selectedLink = null;
+      if (window.innerWidth > 760) placeCards();
+      return;
+    }
+
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    if (window.innerWidth <= 760) {
+      window.location.href = link.href;
+      return;
+    }
+
+    event.preventDefault();
+
+    if (selectedLink !== link) {
+      selectedLink?.classList.remove("is-selected", "is-entering");
+      selectedLink = link;
+      link.classList.add("is-selected");
+      addOneFillStep(link);
+      return;
+    }
+
+    if (isCommitting) return;
+    isCommitting = true;
+    const destination = link.href;
+
+    link.classList.add("is-entering");
+
+    window.setTimeout(() => {
+      if (rainInterval) window.clearInterval(rainInterval);
+      window.location.href = destination;
+    }, 850);
+  });
+
+  window.addEventListener("resize", () => {
+    window.clearTimeout(window.__homeResizeTimer);
+    window.__homeResizeTimer = window.setTimeout(() => {
+      addDuplicateCopies();
+      const images = [...projectsRoot.querySelectorAll("img")];
+      Promise.all(images.map((image) => new Promise((resolve) => {
+        if (image.complete) { resolve(); return; }
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      }))).then(placeCards);
+    }, 140);
+  });
+
+  menuButton?.addEventListener("click", () => {
+    siteNav?.classList.toggle("open");
+    document.body.classList.toggle("menu-open");
+  });
+
+  loadHomeSheet();
+</script>
+</body>
+</html>
